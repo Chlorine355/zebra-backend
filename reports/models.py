@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Float
 from auth.database import Base
 
 class Report(Base):
@@ -6,15 +6,15 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(String, index=True)
+    user_id = Column(Integer, index=True)
     
     violation = Column(String)
-    datetinme = Column(DateTime)
-    lat = Column(String)
-    lon = Column(String)
+    datetime = Column(DateTime)
+    lat = Column(Float)
+    lon = Column(Float)
     description = Column(String)
     
-    report_datetime = datetinme = Column(DateTime)
+    report_datetime = Column(DateTime)
     status = Column(String)
     address = Column(String, nullable=True)
     gosnomer = Column(String, nullable=True)

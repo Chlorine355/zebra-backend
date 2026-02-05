@@ -12,4 +12,4 @@ class User(UserBase):
     receives_notifications: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True

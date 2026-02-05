@@ -56,7 +56,10 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
 
 
 def get_report(db: Session, current_user: User, report_id: int):
-    report = db.query(Report).filter(Report.id == report_id, Report.user_id == current_user.id).first()
+    if current_user.is_admin:
+        report = db.query(Report).filter(Report.id == report_id).first() # admin can access any report
+    else:
+        report = db.query(Report).filter(Report.id == report_id, Report.user_id == current_user.id ).first() # users can access only their reports
     if report is None:
         raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

@@ -32,4 +32,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    if db_user.id == 1: # the first user is admin
+        db.query(User).filter(User.id == db_user.id).update({'is_admin': True})
+        db.commit()
     return db_user

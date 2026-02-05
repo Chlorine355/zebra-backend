@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from const import ALGORITHM, SECRET_KEY
 from reports.schemas import ReportCreate
 from .utils import verify_password, get_password_hash, create_access_token
 from .models import TokenData
@@ -12,10 +13,7 @@ from .database import SessionLocal, engine, Base
 import datetime
 
 Base.metadata.create_all(bind=engine)
-# TODO: actual values
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 

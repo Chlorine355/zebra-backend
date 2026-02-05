@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.get("/all", response_model=ReportsShortResponse)
 def reports_all(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    reports = get_reports(db, user_id=current_user.id)
+    reports = get_reports(db, user=current_user)
     return {'reports': reports}
 
 

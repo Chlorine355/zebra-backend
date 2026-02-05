@@ -14,7 +14,7 @@ def reports_all(current_user = Depends(get_current_user), db: Session = Depends(
 
 @router.get("/one_by_id", response_model=ReportFull)
 def report_one_by_id(report_id: int, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    report = get_report(db, report_id=report_id)
+    report = get_report(db, current_user, report_id=report_id)
     return report
 
 @router.post("/create", response_model=ReportCreateResponse)

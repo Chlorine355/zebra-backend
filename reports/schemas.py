@@ -11,10 +11,7 @@ class ReportShort(BaseModel):
 
 class ReportsShortResponse(BaseModel):
     reports: List[ReportShort]
-
-class ReportCreate(ReportShort):
-    # todo
-    pass
+    
 
 class ReportFull(ReportShort):
     user_id: int

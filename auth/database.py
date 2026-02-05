@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# replace with getting from env
+# TODO: replace with getting from env
 DB_PORT = 5432
 DB_USER = 'user'
 DB_PASSWORD = 'password'

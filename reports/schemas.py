@@ -3,6 +3,8 @@ from fastapi import UploadFile
 from pydantic import BaseModel
 from datetime import datetime as datetime_type
 
+from assets.schemas import Asset
+
 
 class ReportShort(BaseModel):
     id: int
@@ -22,7 +24,7 @@ class ReportFull(ReportShort):
     report_datetime: datetime_type
     address: str | None
     gosnomer: str | None
-    assets: List[str] # TODO: figure out the best way
+    assets: List[Asset] # TODO: figure out the best way
 
     class Config:
         from_attributes = True

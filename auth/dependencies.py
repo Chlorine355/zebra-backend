@@ -1,3 +1,4 @@
+import aiofiles
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -9,6 +10,7 @@ from .utils import verify_password, get_password_hash, create_access_token
 from .models import TokenData
 from users.models import User
 from reports.models import Report
+from assets.models import Asset
 from .database import SessionLocal, engine, Base
 import datetime
 
@@ -77,18 +79,28 @@ def get_reports(db: Session, user: User):
     if reports is None: 
         return []
     return reports
-
-def create_report(db: Session, report: ReportCreate, current_user: User):
-    report = Report(violation=report.violation, 
+async def create_report(db: Session, report: ReportCreate, current_user: User):
+    now = datetime.datetime.now()
+    db_report = Report(violation=report.violation, 
                     user_id=current_user.id, 
                     datetime=datetime.datetime.fromisoformat(report.datetime), 
                     lat=report.lat, 
                     lon=report.lon, 
                     description=report.description, 
                     status='pending',
-                    report_datetime=datetime.datetime.now(),
+                    report_datetime=now,
                     )
-    db.add(report)
+    db.add(db_report)
     db.commit()
-    db.refresh(report)
-    return report
+    db.refresh(db_report)
+
+    for asset in report.assets:
+        path = 'upload/' + asset.filename
+        async with aiofiles.open(path, 'wb') as out_file:
+            content = await asset.read()
+            await out_file.write(content)
+            db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path)
+            db.add(db_asset) 
+   
+    db.commit()
+    return db_report

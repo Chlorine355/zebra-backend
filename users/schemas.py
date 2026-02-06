@@ -10,6 +10,7 @@ class User(UserBase):
     id: int
     is_active: bool
     is_admin: bool
+    daily_reports: int
     receives_notifications: bool
 
     class Config:

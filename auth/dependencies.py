@@ -84,6 +84,7 @@ def get_reports(db: Session, user: User):
 
 async def create_report(db: Session, report: ReportCreate, current_user: User):
     now = datetime.datetime.now()
+    # create report and get its id
     db_report = Report(violation=report.violation, 
                     user_id=current_user.id, 
                     datetime=datetime.datetime.fromisoformat(report.datetime), 
@@ -96,7 +97,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     db.add(db_report)
     db.commit()
     db.refresh(db_report)
-
+    # save assets
     for asset in report.assets:
         path = 'upload/' + asset.filename
         async with aiofiles.open(path, 'wb') as out_file:
@@ -104,6 +105,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
             await out_file.write(content)
             db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path)
             db.add(db_asset) 
-   
+    # increment user's daily_reports
+    db.query(User).filter(User.id == current_user.id).update({User.daily_reports: User.daily_reports + 1})
     db.commit()
     return db_report

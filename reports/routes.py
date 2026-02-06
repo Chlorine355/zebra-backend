@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports
+from const import MAX_DAILY_REPORTS
 from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse
 from sqlalchemy.orm import Session
 
@@ -18,6 +19,12 @@ def report_one_by_id(report_id: int, current_user = Depends(get_current_user), d
     return report
 
 @router.post("/create", response_model=ReportCreateResponse)
-def reports_create(report: ReportCreate, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    report = create_report(db, report, current_user)
+async def reports_create(report: ReportCreate, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.daily_reports >= MAX_DAILY_REPORTS:
+        raise HTTPException(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        detail="Достигнут лимит обращений за день",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    report = await create_report(db, report, current_user)
     return {'report_id': report.id}

@@ -22,6 +22,7 @@ class ReportFull(ReportShort):
     report_datetime: datetime_type
     address: str | None
     gosnomer: str | None
+    assets: List[str] # TODO: figure out the best way
 
     class Config:
         from_attributes = True

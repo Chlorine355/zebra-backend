@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class UserBase(BaseModel):
     username: str
@@ -15,3 +16,7 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+        
+class UsersResponse(BaseModel):
+    total: int
+    users: List[User]

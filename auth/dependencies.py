@@ -56,6 +56,16 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         raise credentials_exception
     return user
 
+def get_all_users(db: Session, current_user: User):
+    if not current_user.is_admin:
+        raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You can't access this endpoint",
+    )
+    users = db.query(User).all()
+    print(users)
+    return users
+
 
 def get_report(db: Session, current_user: User, report_id: int):
     if current_user.is_admin:

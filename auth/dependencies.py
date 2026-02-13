@@ -64,7 +64,6 @@ def get_all_users(db: Session, current_user: User):
         detail="You can't access this endpoint",
     )
     users = db.query(User).all()
-    print(users)
     return users
 
 
@@ -111,8 +110,8 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     # save assets
     for asset in report.assets:
         path = 'upload/' + asset.filename
-        async with aiofiles.open(path, 'wb') as out_file:
-            content = await asset.read()
+        async with aiofiles.open(path, 'wb', encoding='utf-8') as out_file:
+            content = await asset.file.read()
             await out_file.write(content)
             db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path)
             db.add(db_asset) 

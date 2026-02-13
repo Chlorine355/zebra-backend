@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports
+from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats
 from const import MAX_DAILY_REPORTS
-from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse
+from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats
 from sqlalchemy.orm import Session
 
 
@@ -11,7 +11,6 @@ router = APIRouter()
 def reports_all(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     reports = get_reports(db, user=current_user)
     return {'reports': reports}
-
 
 @router.get("/one_by_id", response_model=ReportFull)
 def report_one_by_id(report_id: int, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -28,3 +27,8 @@ async def reports_create(report: ReportCreate, current_user = Depends(get_curren
     )
     report = await create_report(db, report, current_user)
     return {'report_id': report.id}
+
+@router.get("/stats", response_model=Stats)
+def stats(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    stat_tuples = get_stats(db, current_user)
+    return dict(stat_tuples)

@@ -122,5 +122,5 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     return db_report
 
 def get_stats(db: Session, user: User):
-    stats = db.query(Report.status, func.count(Report.status)).group_by(Report.status).all()
+    stats = db.query(Report.status, func.count(Report.status)).filter(Report.user_id == user.id).group_by(Report.status).all()
     return stats

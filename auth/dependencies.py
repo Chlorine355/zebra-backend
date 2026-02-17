@@ -123,3 +123,8 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
 def get_stats(db: Session, user: User):
     stats = db.query(Report.status, func.count(Report.status)).filter(Report.user_id == user.id).group_by(Report.status).all()
     return stats
+
+def set_user_notifications(value, db: Session, current_user: User):
+    db.query(User).filter(User.id == current_user.id).update({User.receives_notifications: value})
+    db.commit()
+    return {'receives_notifications': value}

@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from fastapi import UploadFile
 from pydantic import BaseModel
 from datetime import datetime as datetime_type
@@ -15,6 +15,8 @@ class ReportShort(BaseModel):
 class ReportsShortResponse(BaseModel):
     reports: List[ReportShort]
     
+class GeoResponse(BaseModel):
+    items: List[Tuple[float, float]]
 
 class ReportFull(ReportShort):
     user_id: int

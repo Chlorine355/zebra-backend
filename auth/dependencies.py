@@ -92,6 +92,15 @@ def get_reports(db: Session, user: User):
         return []
     return reports
 
+def get_reports_geo(db: Session, user: User):
+    if user.is_admin:
+        reports = db.query(Report.lat, Report.lon).all() # get all
+    else:
+        return []
+    if reports is None: 
+        return []
+    return reports
+
 async def create_report(db: Session, report: ReportCreate, current_user: User):
     now = datetime.datetime.now()
     # create report and get its id

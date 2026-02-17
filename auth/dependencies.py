@@ -101,6 +101,16 @@ def get_reports_geo(db: Session, user: User):
         return []
     return reports
 
+def change_report_status(db: Session, current_user: User, report_id: int, new_status: str):
+    if not current_user.is_admin:
+        raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You can't access this endpoint",
+    )
+    db.query(Report).filter(Report.id == report_id).update({Report.status: new_status})
+    db.commit()
+    return new_status
+
 async def create_report(db: Session, report: ReportCreate, current_user: User):
     now = datetime.datetime.now()
     # create report and get its id

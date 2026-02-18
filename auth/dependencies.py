@@ -128,9 +128,12 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     db.commit()
     db.refresh(db_report)
     # save assets
-    for index in range(len(report.assets)):
-        asset = report.assets[index]
-        filename = report.filenames[index]
+    assets = report.assets[0].split(',')
+    filenames = report.filenames[0].split(',')
+    for index in range(len(assets)):
+        asset = assets[index]
+        asset += "=" * ((4 - len(asset) % 4) % 4) #ugh
+        filename = filenames[index]
         path = 'upload/' + filename
         async with aiofiles.open(path, 'wb') as out_file:
             decoded_image = base64.b64decode(asset)

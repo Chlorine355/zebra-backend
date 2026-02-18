@@ -1,3 +1,4 @@
+import base64
 import aiofiles
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -127,11 +128,13 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     db.commit()
     db.refresh(db_report)
     # save assets
-    for asset in report.assets:
-        path = 'upload/' + asset.filename
-        async with aiofiles.open(path, 'wb', encoding='utf-8') as out_file:
-            content = await asset.file.read()
-            await out_file.write(content)
+    for index in range(len(report.assets)):
+        asset = report.assets[index]
+        filename = report.filenames[index]
+        path = 'upload/' + filename
+        async with aiofiles.open(path, 'wb') as out_file:
+            decoded_image = base64.b64decode(asset)
+            await out_file.write(decoded_image)
             db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path)
             db.add(db_asset) 
     # increment user's daily_reports

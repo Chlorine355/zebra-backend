@@ -37,7 +37,8 @@ class ReportCreate(BaseModel):
     lat: float
     lon: float
     description: str
-    assets: Optional[List[UploadFile]] = []
+    assets: List[str]
+    filenames: List[str]
 
 
 class ReportCreateResponse(BaseModel):

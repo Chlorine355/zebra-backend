@@ -138,7 +138,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     filenames = report.filenames[0].split(',')
     for index in range(len(assets)):
         asset = assets[index]
-        asset += "=" * ((4 - len(asset) % 4) % 4) #ugh
+        asset += "=" * ((4 - len(asset) % 4) % 4) # pad end with blanks
         filename = filenames[index]
         path = 'upload/' + filename
         async with aiofiles.open(path, 'wb') as out_file:

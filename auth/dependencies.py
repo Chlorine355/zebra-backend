@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 
-from const import ALGORITHM, SECRET_KEY
+from const import ALGORITHM, SECRET_KEY, YANDEX_GEOCODER_KEY
 from reports.schemas import ReportCreate
 from .utils import verify_password, get_password_hash, create_access_token
 from .models import TokenData
@@ -15,11 +15,14 @@ from reports.models import Report
 from assets.models import Asset
 from .database import SessionLocal, engine, Base
 import datetime
+from decimal import Decimal
+from yandex_geocoder import Client
 
 Base.metadata.create_all(bind=engine)
 
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+
+geocoder = Client(YANDEX_GEOCODER_KEY)
 
 def get_db():
     db = SessionLocal()
@@ -115,6 +118,7 @@ def change_report_status(db: Session, current_user: User, report_id: int, new_st
 async def create_report(db: Session, report: ReportCreate, current_user: User):
     now = datetime.datetime.now()
     # create report and get its id
+    address = geocoder.address(Decimal(report.lon), Decimal(report.lat))
     db_report = Report(violation=report.violation, 
                     user_id=current_user.id, 
                     datetime=datetime.datetime.fromisoformat(report.datetime), 
@@ -124,6 +128,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
                     status='pending',
                     report_datetime=now,
                     gosnomer=report.gosnomer
+                    address=address
                     )
     db.add(db_report)
     db.commit()

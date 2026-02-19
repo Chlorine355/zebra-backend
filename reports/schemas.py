@@ -39,7 +39,7 @@ class ReportCreate(BaseModel):
     description: str
     assets: List[str]
     filenames: List[str]
-
+    gosnomer: str
 
 class ReportCreateResponse(BaseModel):
     report_id: int

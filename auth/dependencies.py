@@ -140,7 +140,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
         asset = assets[index]
         asset += "=" * ((4 - len(asset) % 4) % 4) # pad end with blanks
         filename = filenames[index]
-        path = 'upload/' + filename
+        path = 'upload/' + now.strftime("%Y-%m-%d_%H%M%S_") + filename
         async with aiofiles.open(path, 'wb') as out_file:
             decoded_image = base64.b64decode(asset)
             await out_file.write(decoded_image)

@@ -9,7 +9,7 @@ from reports.routes import router as reports_router
 from assets.routes import router as assets_router
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(root_path='/api')
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):

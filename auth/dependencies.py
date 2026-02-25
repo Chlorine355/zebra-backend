@@ -61,14 +61,16 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         raise credentials_exception
     return user
 
-def get_all_users(db: Session, current_user: User):
+def get_all_users(db: Session, current_user: User, page: int):
     if not current_user.is_admin:
         raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="You can't access this endpoint",
     )
-    users = db.query(User).all()
-    return users
+    users = db.query(User)
+    total = users.count()
+    items = users.offset(PAGE_SIZE * page).limit(PAGE_SIZE).all()
+    return items, total
 
 
 def get_report(db: Session, current_user: User, report_id: int):

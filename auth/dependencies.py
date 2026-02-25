@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 
-from const import ALGORITHM, SECRET_KEY, YANDEX_GEOCODER_KEY
+from const import ALGORITHM, PAGE_SIZE, SECRET_KEY, YANDEX_GEOCODER_KEY
 from reports.schemas import ReportCreate
 from .utils import verify_password, get_password_hash, create_access_token
 from .models import TokenData
@@ -87,14 +87,17 @@ def get_report(db: Session, current_user: User, report_id: int):
     return report
 
 
-def get_reports(db: Session, user: User):
+def get_reports(db: Session, user: User, page: int, status: str):
     if user.is_admin:
-        reports = db.query(Report).order_by(desc(Report.id)).all() # get all
+        reports = db.query(Report).order_by(desc(Report.id)) # get all
     else:
-        reports = db.query(Report).filter(Report.user_id == user.id).order_by(desc(Report.id)).all() # get user's
+        reports = db.query(Report).filter(Report.user_id == user.id).order_by(desc(Report.id)) # get user's
     if reports is None: 
-        return []
-    return reports
+        return [], 0
+    filtered_reports = reports.filter(Report.status == status) if status else reports
+    total = filtered_reports.count()
+    items = filtered_reports.offset(PAGE_SIZE * page).limit(PAGE_SIZE).all()
+    return items, total
 
 def get_reports_geo(db: Session, user: User):
     if user.is_admin:

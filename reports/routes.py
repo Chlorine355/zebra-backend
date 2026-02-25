@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats, get_reports_geo, change_report_status
 from const import MAX_DAILY_REPORTS
@@ -8,9 +10,9 @@ from sqlalchemy.orm import Session
 router = APIRouter()
 
 @router.get("/all", response_model=ReportsShortResponse)
-def reports_all(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    reports = get_reports(db, user=current_user)
-    return {'reports': reports}
+def reports_all(status: Optional[str] = None, page: Optional[int] = 0, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    reports, total = get_reports(db, user=current_user, page=page, status=status)
+    return {'reports': reports, 'total': total}
 
 @router.get("/geo", response_model=GeoResponse)
 def reports_geo_all(current_user = Depends(get_current_user), db: Session = Depends(get_db)):

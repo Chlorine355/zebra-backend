@@ -5,15 +5,16 @@ from datetime import datetime as datetime_type
 
 from assets.schemas import Asset
 
-
 class ReportShort(BaseModel):
     id: int
     violation: str
     datetime: datetime_type
     status: str
 
+
 class ReportsShortResponse(BaseModel):
     reports: List[ReportShort]
+    total: int
     
 class GeoResponse(BaseModel):
     items: List[Tuple[float, float]]

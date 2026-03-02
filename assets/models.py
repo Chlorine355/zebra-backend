@@ -10,4 +10,5 @@ class Asset(Base):
     datetime = Column(DateTime)
     uri = Column(String)
     is_video = Column(Boolean, default=False)
+    file_hash = Column(String(64))
     

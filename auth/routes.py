@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -28,11 +30,13 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     hashed_password = get_password_hash(user.password)
-    db_user = User(username=user.username, hashed_password=hashed_password)
+    now = datetime.datetime.now()
+
+    db_user = User(email=user.username, hashed_password=hashed_password, created_at=now, updated_at=now, last_login=now)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    if db_user.id == 1: # the first user is admin
+    if db_user.id == 1: # the first user is assigned admin
         db.query(User).filter(User.id == db_user.id).update({'is_admin': True})
         db.commit()
     return db_user

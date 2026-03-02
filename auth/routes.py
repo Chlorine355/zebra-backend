@@ -50,7 +50,7 @@ def verify_email(token: str = Query(...), db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(400, "Недействительный или уже использованный токен")
         
-    if user.token_expires < datetime.now(datetime.timezone.utc):
+    if user.token_expires <  datetime.datetime.now(datetime.timezone.utc):
         raise HTTPException(400, "Срок действия токена истёк")
         
     user.is_verified = True

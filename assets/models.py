@@ -7,8 +7,9 @@ class Asset(Base):
     id = Column(Integer, primary_key=True, index=True)
     report_id = Column(Integer, index=True)
     user_id = Column(Integer, index=True)
-    datetime = Column(DateTime)
-    uri = Column(String)
+    created_at = Column(DateTime)
+    s3_key = Column(String)
+    filename = Column(String)
     is_video = Column(Boolean, default=False)
     file_hash = Column(String(64))
     

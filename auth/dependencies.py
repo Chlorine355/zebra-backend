@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
+import hashlib
 
 from const import ALGORITHM, PAGE_SIZE, SECRET_KEY, YANDEX_GEOCODER_KEY
 from reports.schemas import ReportCreate
@@ -30,6 +31,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def compute_file_hash(file, algorithm: str = "sha256", chunk_size: int = 65_536) -> str:
+    h = hashlib.new(algorithm)
+    file_obj = file.file if hasattr(file, "file") else file
+    file_obj.seek(0)
+    while chunk := file_obj.read(chunk_size):
+        h.update(chunk)
+    file_obj.seek(0)
+    return h.hexdigest()
 
 def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
@@ -138,6 +148,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     db.add(db_report)
     db.commit()
     db.refresh(db_report)
+
     # save assets
     assets = report.assets[0].split(',')
     filenames = report.filenames[0].split(',')
@@ -149,8 +160,10 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
         async with aiofiles.open(path, 'wb') as out_file:
             decoded_image = base64.b64decode(asset)
             await out_file.write(decoded_image)
-            db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path)
+            # TODO: replace with compute_file_hash, когда заработает аплоад в виде файлов
+            db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path, file_hash=hashlib.sha256(decoded_image).hexdigest())
             db.add(db_asset) 
+    
     # increment user's daily_reports
     db.query(User).filter(User.id == current_user.id).update({User.daily_reports: User.daily_reports + 1})
     db.commit()

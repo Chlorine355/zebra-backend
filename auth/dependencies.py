@@ -131,7 +131,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
                     lon=report.lon, 
                     description=report.description, 
                     status='pending',
-                    report_datetime=now,
+                    created_at=now,
                     gosnomer=report.gosnomer,
                     address=address
                     )

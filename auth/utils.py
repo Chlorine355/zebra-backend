@@ -5,6 +5,9 @@ import secrets
 from sqlalchemy.orm import Session
 from users.models import User
 from fastapi import BackgroundTasks
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from const import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, SMTP_FROM, SMTP_HOST, SMTP_PASS, SMTP_PORT, SMTP_USER, BASE_URL
 
@@ -51,11 +54,6 @@ async def send_verification_email(email: str, token: str, background_tasks: Back
     )
 
 def _send_email_async(to_email: str, subject: str, html_content: str):
-    """Пример с smtplib. Лучше использовать сторонний сервис."""
-    import smtplib
-    from email.mime.text import MIMEText
-    from email.mime.multipart import MIMEMultipart
-
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = SMTP_FROM

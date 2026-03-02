@@ -26,7 +26,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/signup", response_model=UserResponse)
-def signup(user: UserCreate, db: Session = Depends(get_db), background_tasks = BackgroundTasks):
+async def signup(user: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     db_user = get_user(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="email already registered")
@@ -41,7 +41,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db), background_tasks = B
         db.query(User).filter(User.id == db_user.id).update({'is_admin': True})
         db.commit()
     verification_token = generate_verification_token(db, db_user.id) # TODO: 1 query, use user
-    send_verification_email(db_user.email, verification_token, background_tasks)
+    await send_verification_email(db_user.email, verification_token, background_tasks)
     return db_user
 
 @router.get("/verify", status_code=200)

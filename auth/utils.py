@@ -44,8 +44,6 @@ def generate_verification_token(db: Session, user_id: int) -> str:
 async def send_verification_email(email: str, token: str, background_tasks: BackgroundTasks):
     link = f"{BASE_URL}/api/auth/verify?token={token}"
     html = f"<p>Нажмите для подтверждения: <a href='{link}'>{link}</a></p>"
-    
-    # В продакшене: Resend, SendGrid, AWS SES или Celery + RQ
     background_tasks.add_task(
         _send_email_async, 
         to_email=email, 

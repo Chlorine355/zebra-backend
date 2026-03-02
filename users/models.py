@@ -6,13 +6,19 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True)
+    first_name = Column(String(255))
+    last_name = Column(String(255))
+    patronymic = Column(String(255))
     hashed_password = Column(String(255))
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
-    is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     last_login = Column(DateTime)
     daily_reports = Column(Integer, default=0)
     receives_notifications = Column(Boolean, default=False) 
+
+    is_verified = Column(Boolean, default=False)
+    verification_token = Column(String(64), nullable=True, unique=True)
+    token_expires = Column(DateTime(timezone=True), nullable=True)
 

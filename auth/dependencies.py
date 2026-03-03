@@ -161,7 +161,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
             decoded_image = base64.b64decode(asset)
             await out_file.write(decoded_image)
             # TODO: replace with compute_file_hash, когда заработает аплоад в виде файлов
-            db_asset = Asset(user_id=current_user.id,report_id=db_report.id, datetime=now, uri=path, file_hash=hashlib.sha256(decoded_image).hexdigest())
+            db_asset = Asset(user_id=current_user.id,report_id=db_report.id, created_at=now, uri=path, file_hash=hashlib.sha256(decoded_image).hexdigest())
             db.add(db_asset) 
     
     # increment user's daily_reports

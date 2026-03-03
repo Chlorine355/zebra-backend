@@ -6,7 +6,7 @@ from datetime import datetime as datetime_type
 class Asset(BaseModel):
     id: int
     user_id: int
-    datetime: datetime_type
+    created_at: datetime_type
     uri: str
     is_video: bool
 

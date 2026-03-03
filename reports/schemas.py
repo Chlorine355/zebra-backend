@@ -24,7 +24,7 @@ class ReportFull(ReportShort):
     lat: float
     lon: float
     description: str
-    report_datetime: datetime_type
+    datetime: datetime_type
     address: str | None
     gosnomer: str | None
     assets: List[Asset] # TODO: figure out the best way

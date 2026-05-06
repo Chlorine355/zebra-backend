@@ -68,8 +68,11 @@ def get_report(db: Session, current_user: User, report_id: int):
     return report
 
 
-def get_reports(db: Session, user_id: int):
-    reports = db.query(Report).filter(Report.user_id == user_id).all()
+def get_reports(db: Session, user: User):
+    if user.is_admin:
+        reports = db.query(Report).all() # get all
+    else:
+        reports = db.query(Report).filter(Report.user_id == user.id).all() # get user's
     if reports is None: 
         return []
     return reports

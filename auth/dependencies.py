@@ -57,8 +57,8 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     return user
 
 
-def get_report(db: Session, report_id: int):
-    report = db.query(Report).filter(Report.id == report_id).first()
+def get_report(db: Session, current_user: User, report_id: int):
+    report = db.query(Report).filter(Report.id == report_id, Report.user_id == current_user.id).first()
     if report is None:
         raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

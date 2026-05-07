@@ -68,6 +68,8 @@ def get_report(db: Session, current_user: User, report_id: int):
         detail=f"Report {report_id} does not exist",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    assets = db.query(Asset).filter(Asset.report_id == report.id).all()
+    report.assets = assets
     return report
 
 
@@ -79,6 +81,7 @@ def get_reports(db: Session, user: User):
     if reports is None: 
         return []
     return reports
+
 async def create_report(db: Session, report: ReportCreate, current_user: User):
     now = datetime.datetime.now()
     db_report = Report(violation=report.violation, 

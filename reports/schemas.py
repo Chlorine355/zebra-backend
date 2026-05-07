@@ -1,4 +1,5 @@
 from typing import List
+from fastapi import UploadFile
 from pydantic import BaseModel
 from datetime import datetime as datetime_type
 
@@ -31,6 +32,8 @@ class ReportCreate(BaseModel):
     lat: float
     lon: float
     description: str
+    assets: List[UploadFile]
+
 
 class ReportCreateResponse(BaseModel):
     report_id: int

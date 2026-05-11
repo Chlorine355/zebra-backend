@@ -11,3 +11,4 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     daily_reports = Column(Integer, default=0)
     receives_notifications = Column(Boolean, default=False) 
+

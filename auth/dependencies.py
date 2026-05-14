@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from sqlalchemy import func, desc
 
 from const import ALGORITHM, SECRET_KEY
 from reports.schemas import ReportCreate
@@ -85,9 +86,9 @@ def get_report(db: Session, current_user: User, report_id: int):
 
 def get_reports(db: Session, user: User):
     if user.is_admin:
-        reports = db.query(Report).all() # get all
+        reports = db.query(Report).order_by(desc(Report.id)).all() # get all
     else:
-        reports = db.query(Report).filter(Report.user_id == user.id).all() # get user's
+        reports = db.query(Report).filter(Report.user_id == user.id).order_by(desc(Report.id)).all() # get user's
     if reports is None: 
         return []
     return reports
@@ -119,3 +120,7 @@ async def create_report(db: Session, report: ReportCreate, current_user: User):
     db.query(User).filter(User.id == current_user.id).update({User.daily_reports: User.daily_reports + 1})
     db.commit()
     return db_report
+
+def get_stats(db: Session, user: User):
+    stats = db.query(Report.status, func.count(Report.status)).group_by(Report.status).all()
+    return stats

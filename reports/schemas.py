@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from fastapi import UploadFile
 from pydantic import BaseModel
 from datetime import datetime as datetime_type
@@ -40,3 +40,5 @@ class ReportCreate(BaseModel):
 
 class ReportCreateResponse(BaseModel):
     report_id: int
+
+Stats = Dict[str, int]

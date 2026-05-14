@@ -8,7 +8,6 @@ router = APIRouter()
 
 @router.get("/current", response_model=User)
 def read_users_me(current_user: UserModel = Depends(get_current_user)):
-    print(current_user)
     return current_user
 
 @router.get("/all", response_model=UsersResponse)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
-from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats, get_reports_geo
+from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats, get_reports_geo, change_report_status
 from const import MAX_DAILY_REPORTS
-from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse
+from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse, StatusChangeResponse
 from sqlalchemy.orm import Session
 
 
@@ -21,6 +21,11 @@ def reports_geo_all(current_user = Depends(get_current_user), db: Session = Depe
 def report_one_by_id(report_id: int, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     report = get_report(db, current_user, report_id=report_id)
     return report
+
+@router.patch("/change_status", response_model=StatusChangeResponse)
+def change_status(report_id: int, new_status: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    status = change_report_status(db, current_user, report_id=report_id, new_status=new_status)
+    return {'new_status': status}
 
 @router.post("/create", response_model=ReportCreateResponse)
 async def reports_create(report: ReportCreate = Form(), current_user = Depends(get_current_user), db: Session = Depends(get_db)):

@@ -43,4 +43,7 @@ class ReportCreate(BaseModel):
 class ReportCreateResponse(BaseModel):
     report_id: int
 
+class StatusChangeResponse(BaseModel):
+    new_status: str
+
 Stats = Dict[str, int]

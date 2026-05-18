@@ -20,3 +20,6 @@ class User(UserBase):
 class UsersResponse(BaseModel):
     total: int
     users: List[User]
+
+class Notifications(BaseModel):
+    receives_notifications: bool

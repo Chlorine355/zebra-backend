@@ -8,18 +8,21 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reports.models import Report
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.units import mm
+
+from reports.schemas import ReportFull
 
 
 # Function to generate the PDF
-def generate_pdf(report: Report):
+def generate_pdf(report: ReportFull):
     buffer = BytesIO()
-    pdfmetrics.registerFont(TTFont('Inter', 'Inter.ttf'))
+    pdfmetrics.registerFont(TTFont('Inter', 'fonts/Inter.ttf'))
     story = []
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     style = ParagraphStyle(
         'Inter',
+        fontName='Inter',
         fontSize=11,
         leading=13,
         leftIndent=15*mm,
@@ -27,10 +30,17 @@ def generate_pdf(report: Report):
         spaceAfter=8*mm
     )
 
-    text = f"""{report.datetime} в районе {report.address} ({report.lat}, {report.lon}) водитель автомобиля с госномером {report.gosnomer} совершил нарушение: {report.violation}. {report.description}
-Прошу привлечь нарушителя к ответственности.
-""" 
+    story.append(Paragraph("Заявление", style))
+    story.append(Spacer(1, 2*mm))
+
+    text = f"""{report.datetime} в районе {report.address} ({report.lat}, {report.lon}) водитель автомобиля с госномером {report.gosnomer} совершил нарушение: {report.violation}. {report.description}""" 
     story.append(Paragraph(text, style))
+    story.append(Spacer(1, 2*mm))
+    story.append(Paragraph('Прошу привлечь нарушителя к ответственности.', style))
+    for image in report.assets:
+        img_data = open(image.uri, "rb").read()
+        img = Image(BytesIO(img_data), width=130*mm)
+        story.append(img)
     story.append(Spacer(1, 2*mm))
     story.append(Paragraph("Заявитель: _____________________", style))
     story.append(Spacer(1, 2*mm))

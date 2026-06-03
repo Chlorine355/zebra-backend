@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats, get_reports_geo, change_report_status
 from const import MAX_DAILY_REPORTS
 from reports.utils import generate_pdf
-from .schemas import ExportResponse, ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse, StatusChangeResponse
+from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse, StatusChangeResponse
 from sqlalchemy.orm import Session
 
 

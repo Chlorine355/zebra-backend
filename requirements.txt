@@ -10,3 +10,4 @@ aiofiles==25.1.0
 bcrypt==4.3.0
 yandex-geocoder==3.0.1
 psycopg2==2.8.6
+reportlab==3.5.59

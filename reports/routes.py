@@ -1,9 +1,12 @@
+import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status, Form
+from fastapi.responses import StreamingResponse
 from auth.dependencies import create_report, get_current_user, get_db, get_report, get_reports, get_stats, get_reports_geo, change_report_status
 from const import MAX_DAILY_REPORTS
-from .schemas import ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse, StatusChangeResponse
+from reports.utils import generate_pdf
+from .schemas import ExportResponse, ReportCreate, ReportCreateResponse, ReportFull, ReportsShortResponse, Stats, GeoResponse, StatusChangeResponse
 from sqlalchemy.orm import Session
 
 
@@ -44,3 +47,13 @@ async def reports_create(report: ReportCreate = Form(), current_user = Depends(g
 def stats(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     stat_tuples = get_stats(db, current_user)
     return dict(stat_tuples)
+
+@router.get("/export")
+def report_one_by_id(report_id: int, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    report = get_report(db, current_user, report_id=report_id)
+    pdf = generate_pdf(report)
+    return StreamingResponse(
+            pdf,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=report {report.id}.pdf"},
+        )

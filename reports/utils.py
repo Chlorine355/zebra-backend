@@ -8,7 +8,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reports.models import Report
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus import KeepTogether, SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.units import mm
 
 from reports.schemas import ReportFull
@@ -39,7 +39,7 @@ def generate_pdf(report: ReportFull):
     story.append(Paragraph('Прошу привлечь нарушителя к ответственности.', style))
     for image in report.assets:
         img_data = open(image.uri, "rb").read()
-        img = Image(BytesIO(img_data), width=100*mm)
+        img = KeepTogether(Image(BytesIO(img_data), width=100*mm))
         story.append(img)
     story.append(Spacer(1, 2*mm))
     story.append(Paragraph("Заявитель: _____________________", style))

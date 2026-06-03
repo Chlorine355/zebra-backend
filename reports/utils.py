@@ -36,7 +36,7 @@ def generate_pdf(report: ReportFull):
     story.append(Paragraph('Прошу привлечь нарушителя к ответственности.', style))
     for image in report.assets:
         img_data = open(image.uri, "rb").read()
-        img = KeepTogether(Image(BytesIO(img_data), width=10*mm))
+        img = KeepTogether(Image(BytesIO(img_data), width=10*mm, height=10*mm))
         story.append(img)
     story.append(Spacer(1, 2*mm))
     story.append(Paragraph("Заявитель: _____________________", style))
